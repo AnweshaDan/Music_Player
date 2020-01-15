@@ -10,8 +10,15 @@ root = Tk()
 
 mixer.init()  
 
-root.geometry('300x300')
+root.geometry('400x300')
 root.title("Music")#later
+
+lengthlabel=Label(root,text="Total length- 00:00")
+lengthlabel.pack(pady=10)
+
+def show_length():
+    a=mixer.Sound(filename_path)
+    length=a.get_length()
 
 statusbar=Label(root,text='Welcome!',relief=SUNKEN,anchor=W)
 statusbar.pack(side=BOTTOM,fill=X)
@@ -26,7 +33,7 @@ rightframe.pack()
 topframe=Frame(rightframe)
 topframe.pack()
 middleframe=Frame(rightframe)
-middleframe.pack()
+middleframe.pack(pady=10)
 bottomframe=Frame(rightframe)
 bottomframe.pack()
 
@@ -81,7 +88,7 @@ rmvbtn.pack(side=LEFT)
 
 
 text = Label(topframe, text='Lets make some noise!')
-text.pack()
+text.pack(pady=10)
 
 
 
@@ -90,6 +97,7 @@ def stop_music():
     mixer.music.stop()
     statusbar['text']="Music stopped."
     
+paused=False
 def pause_music():
     global paused
     paused=True
@@ -97,9 +105,12 @@ def pause_music():
     statusbar['text']="Music paused."
     
 def play_music():
-    try:
-        paused
-    except NameError :
+    global paused
+    if paused:
+        mixer.music.unpause()
+        statusbar['text']="Music resumed."
+        paused=False
+    else:
         try :
             selected_song=playlist.curselection()
             selected_song=int(selected_song[0])
@@ -109,31 +120,37 @@ def play_music():
             statusbar['text']="Playing "+ os.path.basename(play_it)
         except :
             tkinter.messagebox.showerror('Error','No songs in the playlist')
-    else:
-        mixer.music.unpause()
-        statusbar['text']="Music resumed."
+        
+    
 
 def set_vol(val):
     volume= int(val)/100
     mixer.music.set_volume(volume)
+    
+
+    
+    
 
 
 playPhoto = PhotoImage(file='touch.png')
 playBtn = Button(middleframe, image=playPhoto, command=play_music)
-playBtn.pack(side=LEFT)
+playBtn.pack(side=LEFT,padx=10)
 
 stopPhoto = PhotoImage(file='stop.png')
 stopBtn = Button(middleframe, image=stopPhoto, command=stop_music)
-stopBtn.pack(side=LEFT)
+stopBtn.pack(side=LEFT,padx=10)
 
 pausePhoto = PhotoImage(file='pause.png')
 pauseBtn = Button(middleframe, image=pausePhoto, command=pause_music)
-pauseBtn.pack()
+pauseBtn.pack(padx=10)
 
 scale=Scale(bottomframe,from_=0,to=100,orient=HORIZONTAL,command=set_vol)
 scale.set(70)
 mixer.music.set_volume(0.7)
-scale.pack()
+scale.pack(pady=10)
 
+#progress=Scale(bottomframe,from_=0,to=100,orient=HORIZONTAL,command=set_progress)
+#mixer.music.set_progress(0.7)
+#scale.pack(pady=10)
 
 root.mainloop()
